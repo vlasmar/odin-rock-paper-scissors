@@ -1,4 +1,9 @@
-console.log("Hello World");
+
+let humanScore = 0;
+let computerScore = 0;
+
+const gameButtons = document.querySelectorAll('.buttons');
+const results = document.querySelector('.results');
 
 //Get random answer for computer's choice
 function getComputerChoice(){
@@ -12,56 +17,42 @@ function getComputerChoice(){
     }
 }
 
-//Get a choice from the user
-function getHumanChoice(){
-    let userInput = window.prompt('Give your choice');
-        return userInput;
-}
-
 //Compare the choices and return the result at each round
-function playRound(humanChoice, computerChoice) {
-    humanChoice = humanChoice.toLowerCase();
-    if (humanChoice === 'rock' && computerChoice === 'scissors'){
-        return 'You won! Rock beats Scissors';
-    } else if (humanChoice === 'paper' && computerChoice === 'rock'){
-        return 'You won! Paper beats Rock';
-    } else if (humanChoice === 'scissors' && computerChoice === 'paper'){
-        return 'You won! Scissors beats Paper';
-    } else if (computerChoice === 'rock' && humanChoice === 'scissors'){
-        return 'You loose! Rock beats Scissors';
-    } else if (computerChoice === 'paper' && humanChoice === 'rock'){
-        return 'You loose! Paper beats Rock';
-    } else if (computerChoice === 'scissors' && humanChoice === 'paper'){
-        return 'You loose! Scissors beats Paper';
+function playRound(humanChoice) {
+    const computerChoice = getComputerChoice();
+    const playersSelection = document.createElement('p');
+    playersSelection.textContent = humanChoice;
+    const computersSelection = document.createElement('p');
+    computersSelection.textContent = computerChoice;
+    const resultText = document.createElement('p');
+    results.appendChild(playersSelection);
+    results.appendChild(computersSelection);
+    results.appendChild(resultText);
+
+    if ((humanChoice === 'rock' && computerChoice === 'scissors') || (humanChoice === 'paper' && computerChoice === 'rock') || (humanChoice === 'scissors' && computerChoice === 'paper')){
+        humanScore++;
+        resultText.textContent = `You won! ${humanChoice.toUpperCase()} beats ${computerChoice.toUpperCase()}`;
+    } else if ((computerChoice === 'rock' && humanChoice === 'scissors') || (computerChoice === 'paper' && humanChoice === 'rock') || (computerChoice === 'scissors' && humanChoice === 'paper')){
+        computerScore++;
+        resultText.textContent = `You loose! ${computerChoice.toUpperCase()} beats ${humanChoice.toUpperCase()}`;
     } else {
-        return 'It is a tie!';
+        resultText.textContent = `It is a tie! You both chose ${computerChoice.toUpperCase()}`;
     }
 }
 
-//Play the game for 5 rounds, print the score at each round and at the end return who won
-function playGame(){
-    let humanScore = 0;
-    let computerScore = 0;
-
-    for (let i=1; i<=5; i++) {
-        let humanChoice = getHumanChoice();
-        let computerChoice = getComputerChoice();
-        console.log(humanChoice, computerChoice);
-        if (playRound(humanChoice, computerChoice).includes('won')) {
-            humanScore++;
-        } else if (playRound(humanChoice, computerChoice).includes('loose')) {
-            computerScore++;
+gameButtons.forEach((button) => {
+    const finalScore = document.createElement('p');
+    button.addEventListener("click", (e) => { 
+        playRound(e.target.id);
+        if (humanScore === 5) {
+        finalScore.innerText = 'You won! Congratulations!';
+        humanScore = 0;
+        computerScore = 0;
+        } else if (computerScore === 5) {
+        humanScore = 0;
+        computerScore = 0;
+        finalScore.innerText = 'You lost :( Better luck next time...';
         }
-        console.log('New Score: ' + humanScore + ', ' + computerScore);
-    }
-
-    if(humanScore > computerScore) {
-        return 'You won! Congratulations!';
-    } else if (humanScore < computerScore) {
-        return 'You lost :( Better luck next time...';
-    } else {
-        return 'It is a tie';
-    }
-}
-
-console.log(playGame());
+        results.appendChild(finalScore);
+    });
+}); 
